@@ -1,0 +1,45 @@
+{
+  "name": "siputih",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-leaflet/core": "^3.0.0",
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@tailwindcss/vite": "^4.1.5",
+    "alpinejs": "^3.14.9",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-dom-server": "^0.0.5",
+    "react-leaflet": "^5.0.0",
+    "react-pdf": "^9.2.1",
+    "react-router-dom": "^7.5.3",
+    "tailwindcss": "^4.1.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/alpinejs": "^3.13.11",
+    "@types/geojson": "^7946.0.16",
+    "@types/leaflet": "^1.9.17",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@types/react-leaflet": "^2.8.3",
+    "@types/react-router-dom": "^5.3.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1"
+  }
+}

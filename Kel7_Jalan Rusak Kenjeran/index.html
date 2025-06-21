@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.6.1/dist/geosearch.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@1.5.1/Control.FullScreen.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <title>Peta Interaktif Kerusakan Jalan - Kenjeran</title>
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #c0392b;
+            --panel-bg: rgba(255, 255, 255, 0.92);
+            --text-color: #333;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        html, body, #map { width: 100%; height: 100%; padding: 0; margin: 0; font-family: 'Poppins', sans-serif; background-color: #f0f0f0; }
+
+        /* --- UI Panel (Sidebar) --- */
+        #ui-panel {
+            position: absolute; top: 15px; right: 15px; bottom: 15px;
+            width: 360px; z-index: 1000; background: var(--panel-bg); backdrop-filter: blur(12px);
+            border-radius: 15px; box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden;
+        }
+        .panel-header { padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .panel-header h2 { margin: 0; font-size: 1.4rem; color: var(--text-color); display: flex; align-items: center; gap: 12px; }
+        .panel-tabs { display: flex; background-color: rgba(0,0,0,0.05); }
+        .panel-tabs button {
+            flex: 1; padding: 15px; background: none; border: none; font-size: 0.95rem; font-weight: 600;
+            color: #555; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease;
+        }
+        .panel-tabs button:hover { background-color: rgba(0,0,0,0.05); }
+        .panel-tabs button.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); }
+        .panel-content-container { padding: 20px; flex-grow: 1; overflow-y: auto; }
+        .tab-content { display: none; } .tab-content.active { display: block; }
+        .panel-content-container h3 {
+            color: var(--primary-color); margin-top: 0; margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color); padding-bottom: 8px; font-size: 1.1rem;
+        }
+
+        /* Basemap Thumbnail Gallery Styles */
+        .basemap-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .basemap-item { cursor: pointer; border-radius: 8px; overflow: hidden; position: relative; border: 2px solid transparent; transition: all 0.3s ease; }
+        .basemap-item:hover { transform: scale(1.05); }
+        .basemap-item.active { border-color: var(--primary-color); }
+        .basemap-item img { width: 100%; display: block; }
+        .basemap-item .label {
+            position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6);
+            color: white; text-align: center; padding: 5px; font-size: 0.9rem;
+        }
+
+        /* Layer Control & Legend & Download Styles */
+        .layer-item, .legend-item { display: flex; align-items: center; margin-bottom: 15px; font-size: 1rem; }
+        .layer-item label { margin-left: 10px; cursor: pointer; }
+        .legend-item i { font-size: 1.2rem; color: var(--primary-color); margin-right: 12px; }
+        .legend-item .poly-legend { width: 20px; height: 20px; background-color: #91522d; border: 1px solid #232323; margin-right: 12px; }
+        .download-list a {
+            display: flex; align-items: center; gap: 12px; padding: 12px; background-color: rgba(231, 76, 60, 0.1);
+            border-radius: 8px; margin-bottom: 10px; text-decoration: none; color: var(--primary-color);
+            font-weight: 600; transition: all 0.3s ease;
+        }
+        .download-list a:hover { background-color: rgba(231, 76, 60, 0.2); }
+        
+        /* Search Bar & Other Controls Style */
+        .leaflet-bar, .leaflet-control-locate a { border-radius: 8px !important; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #ui-panel { width: auto; left: 10px; right: 10px; bottom: 10px; top: auto; max-height: 45vh; }
+            .panel-header h2 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div id="ui-panel">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-road-circle-exclamation" style="color: var(--primary-color);"></i> Peta Kerusakan Jalan</h2>
+        </div>
+        <div class="panel-tabs">
+            <button class="tab-button active" onclick="showTab('info')"><i class="fa-solid fa-circle-info"></i> Info</button>
+            <button class="tab-button" onclick="showTab('layers')"><i class="fa-solid fa-layer-group"></i> Layer</button>
+            <button class="tab-button" onclick="showTab('download')"><i class="fa-solid fa-download"></i> Unduh</button>
+        </div>
+        <div class="panel-content-container">
+            <div id="info-content" class="tab-content active">
+                <h3>Deskripsi Proyek</h3>
+                <p>Peta ini menunjukkan 90 titik kerusakan jalan yang teridentifikasi di sepanjang jalan utama di wilayah Kelurahan Kenjeran, Surabaya.</p>
+                <h3 style="margin-top: 20px;">Legenda</h3>
+                <div class="legend-item"><i class="fa-solid fa-circle-exclamation"></i> Titik Kerusakan Jalan</div>
+                <div class="legend-item"><div class="poly-legend"></div> Batas Wilayah Kenjeran</div>
+            </div>
+
+            <div id="layers-content" class="tab-content">
+                <h3>Peta Dasar (Basemap)</h3>
+                <div class="basemap-gallery">
+                    <div id="basemap-streets" class="basemap-item active" onclick="switchBasemap('streets')">
+                        <img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/9/223/411" alt="Streets">
+                        <div class="label">Streets</div>
+                    </div>
+                    <div id="basemap-satellite" class="basemap-item" onclick="switchBasemap('satellite')">
+                        <img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/9/223/411" alt="Satellite">
+                        <div class="label">Satelit</div>
+                    </div>
+                    <div id="basemap-dark" class="basemap-item" onclick="switchBasemap('dark')">
+                        <img src="https://{s}.basemaps.cartocdn.com/dark_all/9/411/223.png" alt="Dark Mode">
+                        <div class="label">Dark</div>
+                    </div>
+                    <div id="basemap-topo" class="basemap-item" onclick="switchBasemap('topo')">
+                        <img src="https://{s}.tile.opentopomap.org/9/411/223.png" alt="Topographic">
+                        <div class="label">Topografi</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 20px;">Layer Data</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li class="layer-item">
+                        <input type="checkbox" id="layer-kerusakan" onchange="toggleLayer(layer_JalanRusak_2, this.checked)" checked>
+                        <label for="layer-kerusakan">Titik Kerusakan Jalan</label>
+                    </li>
+                    <li class="layer-item">
+                        <input type="checkbox" id="layer-kenjeran" onchange="toggleLayer(layer_Kenjeran_1, this.checked)" checked>
+                        <label for="layer-kenjeran">Batas Wilayah Kenjeran</label>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="download-content" class="tab-content">
+                <h3>Unduh Data Peta</h3>
+                <div class="download-list">
+                    <a href="javascript:void(0);" onclick="downloadData(json_JalanRusak_2, 'TitikKerusakanJalan_Kenjeran.geojson')">
+                        <i class="fa-solid fa-location-dot"></i> Unduh Titik Kerusakan (GeoJSON)
+                    </a>
+                    <a href="javascript:void(0);" onclick="downloadData(json_Kenjeran_1, 'BatasWilayah_Kenjeran.geojson')">
+                        <i class="fa-solid fa-draw-polygon"></i> Unduh Wilayah Kenjeran (GeoJSON)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/qgis2web_expressions.js"></script>
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+    <script src="js/leaflet-hash.js"></script>
+    <script src="https://unpkg.com/leaflet-geosearch@3.6.1/dist/geosearch.umd.js"></script>
+    <script src="https://unpkg.com/leaflet.fullscreen@1.5.1/Control.FullScreen.js"></script>
+    <script src="js/Autolinker.min.js"></script>
+    <script src="data/Kenjeran_1.js"></script>
+    <script src="data/JalanRusak_2.js"></script>
+    <script>
+        // --- Inisialisasi Peta & Kontrol Dasar ---
+        var map = L.map('map', { zoomControl:false, maxZoom:28, minZoom:1 }).fitBounds([[-7.253495563217146,112.77605555448714],[-7.226289478129385,112.81048757577422]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
+        
+        // --- Menambahkan Kontrol Bawaan Leaflet ---
+        L.control.zoom({ position: 'topleft' }).addTo(map);
+        L.control.scale({ position: 'bottomleft' }).addTo(map);
+        new L.Control.FullScreen({ position: 'topleft' }).addTo(map);
+
+        // --- Fitur Pencarian (Geosearch) ---
+        const provider = new GeoSearch.OpenStreetMapProvider();
+        const searchControl = new GeoSearch.GeoSearchControl({ provider: provider, style: 'bar' });
+        map.addControl(searchControl);
+
+        // --- Fitur Lokasi Saya (My Location) ---
+        var locateControl = L.Control.extend({
+            options: { position: 'topleft' },
+            onAdd: function (map) {
+                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                var button = L.DomUtil.create('a', 'leaflet-control-locate', container);
+                button.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i>';
+                button.href = '#';
+                button.role = 'button';
+                L.DomEvent.on(button, 'click', function (e) { L.DomEvent.stop(e); map.locate({ setView: true, maxZoom: 16 }); });
+                return container;
+            }
+        });
+        map.addControl(new locateControl());
+
+        // --- Definisi Peta Dasar (Basemaps) ---
+        var basemaps = {
+            streets: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }),
+            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri' }),
+            dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' }),
+            topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: '© OpenTopoMap' })
+        };
+        var currentBasemap = basemaps.streets.addTo(map);
+
+        // --- Definisi Layer Data ---
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        function pop_JalanRusak_2(feature, layer) { /* ... (kode asli) ... */ }
+        function pop_Kenjeran_1(feature, layer) { /* ... (kode asli) ... */ }
+        var damageIcon = L.divIcon({ html: '<i class="fa-solid fa-circle-exclamation fa-2x" style="color: var(--primary-color);"></i>', className: '', iconSize: [24, 24], iconAnchor: [12, 24] });
+        var layer_Kenjeran_1 = new L.geoJson(json_Kenjeran_1, { style: { pane: 'pane_Kenjeran_1', opacity: 1, color: '#333', weight: 2.0, fill: true, fillOpacity: 0.2, fillColor: '#91522d' }, onEachFeature: pop_Kenjeran_1 });
+        var layer_JalanRusak_2 = new L.geoJson(json_JalanRusak_2, { pointToLayer: (feat, latlng) => L.marker(latlng, { icon: damageIcon }), onEachFeature: pop_JalanRusak_2 });
+
+        map.createPane('pane_Kenjeran_1'); map.getPane('pane_Kenjeran_1').style.zIndex = 401;
+        map.addLayer(layer_Kenjeran_1);
+        map.addLayer(layer_JalanRusak_2);
+
+        // --- Fungsi UI ---
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content, .tab-button').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName + '-content').classList.add('active');
+            document.querySelector(`.tab-button[onclick*="'${tabName}'"]`).classList.add('active');
+        }
+
+        function switchBasemap(basemapName) {
+            map.removeLayer(currentBasemap);
+            currentBasemap = basemaps[basemapName];
+            map.addLayer(currentBasemap);
+            document.querySelectorAll('.basemap-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('basemap-' + basemapName).classList.add('active');
+        }
+
+        function toggleLayer(layer, isChecked) { isChecked ? map.addLayer(layer) : map.removeLayer(layer); }
+
+        function downloadData(jsonData, filename) {
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonData));
+            var anchor = document.createElement('a');
+            anchor.setAttribute("href", dataStr);
+            anchor.setAttribute("download", filename);
+            document.body.appendChild(anchor); anchor.click(); anchor.remove();
+        }
+        
+    </script>
+</body>
+</html>

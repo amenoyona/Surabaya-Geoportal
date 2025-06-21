@@ -1,0 +1,408 @@
+:root {
+    /* Updated Color Palette */
+    --primary-color: #3f51b5; /* Deeper blue for main accents */
+    --secondary-color: #5c6bc0; /* Lighter blue for hover/gradients */
+    --text-color: #333; /* Darker text for better readability */
+    --light-text-color: #666; /* For less emphasis */
+    --background-gradient-start: #f0f4f8; /* Softer, muted background */
+    --background-gradient-end: #dce7eb; /* Complementary lighter shade */
+    --panel-background: #ffffff; /* Pure white for panels, clean look */
+    --border-color: rgba(63, 81, 181, 0.2); /* Border based on primary color */
+    --shadow-subtle: 0 2px 5px rgba(0,0,0,0.05); /* Very light shadow */
+    --shadow-light: 0 4px 12px rgba(0,0,0,0.08); /* Standard element shadow */
+    --shadow-medium: 0 8px 20px rgba(0,0,0,0.12); /* Panel/container shadow */
+    --shadow-heavy: 0 12px 30px rgba(0,0,0,0.2); /* Loading screen, emphasized elements */
+    --border-radius-base: 8px; /* Consistent rounded corners */
+    --border-radius-large: 15px; /* Larger rounded corners for panels/containers */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
+    height: 100vh;
+    overflow: hidden;
+    color: var(--text-color);
+    line-height: 1.6; /* Improved line spacing */
+}
+
+.header {
+    background: var(--panel-background);
+    backdrop-filter: blur(8px); /* Slightly less blur */
+    padding: 18px 30px; /* More generous padding */
+    box-shadow: var(--shadow-light);
+    border-bottom: 4px solid var(--primary-color); /* Thicker, more prominent border */
+    position: relative;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header h1 {
+    color: var(--primary-color); /* Header title color */
+    font-size: 28px; /* Slightly larger */
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.03); /* Softer text shadow */
+    display: flex;
+    align-items: center;
+    gap: 12px; /* More space between icon and text */
+}
+
+.header h1 i {
+    color: var(--primary-color);
+    font-size: 32px; /* Larger icon */
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 80px); /* Adjusted for new header height */
+    position: relative;
+    padding: 25px; /* More padding around content */
+    gap: 25px; /* More space between sidebar and map */
+}
+
+.sidebar {
+    width: 380px;
+    background: var(--panel-background);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-medium);
+    padding: 30px; /* More internal padding */
+    overflow-y: auto;
+    border-radius: var(--border-radius-large);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 25px; /* Space between panels */
+}
+
+.map-container {
+    flex: 1;
+    position: relative;
+    border-radius: var(--border-radius-large);
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid var(--border-color);
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    border-radius: var(--border-radius-large); /* Apply border-radius to map itself */
+}
+
+.panel {
+    background: var(--panel-background); /* Solid white background for panels */
+    border-radius: var(--border-radius-large);
+    padding: 25px;
+    box-shadow: var(--shadow-light);
+    border: 1px solid rgba(63, 81, 181, 0.1); /* Lighter panel border */
+    transition: all 0.3s ease-in-out;
+}
+
+.panel:hover {
+    transform: translateY(-4px); /* More pronounced lift */
+    box-shadow: var(--shadow-medium);
+}
+
+.panel h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px; /* More space below heading */
+    font-size: 20px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.panel h3 i {
+    color: var(--primary-color);
+    font-size: 22px;
+}
+
+.layer-item {
+    display: flex;
+    align-items: center;
+    padding: 15px; /* More padding */
+    margin: 10px 0;
+    border-radius: var(--border-radius-base);
+    background: #f9fbfd; /* Very light background for items */
+    border: 1px solid rgba(63, 81, 181, 0.08); /* Subtle border */
+    transition: all 0.2s ease-out;
+    cursor: pointer;
+    box-shadow: var(--shadow-subtle);
+}
+
+.layer-item:hover {
+    background: #eef2f7; /* Slightly darker on hover */
+    transform: translateX(8px); /* More pronounced slide */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* Slightly more shadow */
+}
+
+.layer-checkbox {
+    margin-right: 18px; /* More space */
+    transform: scale(1.4); /* Larger checkbox */
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.layer-color {
+    width: 28px; /* Larger color swatch */
+    height: 28px;
+    border-radius: 50%;
+    margin-right: 18px;
+    border: 3px solid rgba(255,255,255,0.7); /* White border for emphasis */
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2); /* Stronger shadow */
+}
+
+.layer-name {
+    flex: 1;
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 16px; /* Slightly larger font */
+}
+
+.layer-count {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); /* Gradient for count badge */
+    color: white;
+    padding: 6px 12px;
+    border-radius: 18px; /* More rounded pill shape */
+    font-size: 14px;
+    font-weight: bold;
+    min-width: 35px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.info-box {
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+    background: var(--panel-background);
+    backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-medium);
+    max-width: 350px; /* Slightly wider info box */
+    z-index: 1000;
+    border: 2px solid var(--primary-color);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--light-text-color);
+}
+
+.info-box h4 {
+    font-size: 18px;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    font-weight: 600;
+}
+
+.loading {
+    position: absolute;
+    top: 0; /* Cover full map area */
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px); /* Gentle blur behind loading text */
+    border-radius: var(--border-radius-large); /* Match map container */
+    box-shadow: var(--shadow-heavy);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 18px;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.spinner {
+    width: 60px; /* Larger spinner */
+    height: 60px;
+    border: 6px solid #e0e7ee; /* Lighter base color for spinner */
+    border-top: 6px solid var(--primary-color); /* Primary color for active part */
+    border-radius: 50%;
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; /* More dynamic spin */
+    margin: 0 auto 20px; /* More space below spinner */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.basemap-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Slightly larger min-width */
+    gap: 15px; /* More space between basemaps */
+    margin-top: 20px;
+}
+
+.basemap-btn {
+    padding: 12px; /* More padding */
+    border: 2px solid #e0e0e0; /* Lighter border for inactive */
+    border-radius: var(--border-radius-base);
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-subtle);
+}
+
+.basemap-btn:hover {
+    border-color: var(--secondary-color);
+    box-shadow: 0 5px 15px rgba(63, 81, 181, 0.15); /* More visible hover shadow */
+    transform: translateY(-3px);
+}
+
+.basemap-btn.active {
+    border-color: var(--primary-color);
+    background: rgba(63, 81, 181, 0.08); /* Lighter active background */
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2), var(--shadow-light); /* Halo effect + shadow */
+}
+
+.basemap-thumbnail {
+    width: 100%;
+    height: 70px; /* Taller thumbnails */
+    background-size: cover;
+    background-position: center;
+    border-radius: 6px; /* Slightly less rounded than button */
+    border: 1px solid #eee;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.05); /* Inner shadow for depth */
+}
+
+/* Example URLs (ensure these are accessible or replaced with your own) */
+.basemap-thumbnail.osm { background-image: url('https://tiles.stadiamaps.com/tiles/osm_bright/4/8/5@2x.png'); } 
+.basemap-thumbnail.satellite { background-image: url('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/5/8'); }
+.basemap-thumbnail.terrain { background-image: url('https://tiles.stadiamaps.com/tiles/stamen_terrain/4/8/5@2x.png'); }
+.basemap-thumbnail.dark { background-image: url('https://cartocdn_a.global.ssl.fastly.net/base-light/4/8/5.png'); }
+
+
+.coordinates {
+    position: absolute;
+    bottom: 20px; /* More distance from bottom */
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8); /* Slightly darker for contrast */
+    color: white;
+    padding: 12px 18px; /* More padding */
+    border-radius: var(--border-radius-base);
+    font-family: 'Fira Code', monospace;
+    font-size: 13px; /* Consistent font size */
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4); /* Stronger shadow */
+}
+
+/* Leaflet default controls styling (Zoom, Fullscreen) */
+.leaflet-control-zoom, .leaflet-control-fullscreen {
+    border-radius: var(--border-radius-base); /* Apply rounded corners */
+    box-shadow: var(--shadow-light); /* Consistent shadow */
+    border: none; /* Remove default border */
+}
+
+.leaflet-control-zoom a, .leaflet-control-fullscreen a {
+    width: 40px; /* Larger buttons */
+    height: 40px;
+    line-height: 40px;
+    background-color: var(--panel-background); /* White background */
+    color: var(--primary-color); /* Primary color for icons */
+    border-radius: var(--border-radius-base); /* Match control box */
+    font-size: 22px; /* Larger icons */
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.leaflet-control-zoom a:hover, .leaflet-control-fullscreen a:hover {
+    background-color: var(--primary-color); /* Primary color on hover */
+    color: white; /* White text on hover */
+    transform: translateY(-2px); /* Slight lift */
+}
+
+.leaflet-control-zoom a:first-child { border-top-left-radius: var(--border-radius-base); border-top-right-radius: var(--border-radius-base); }
+.leaflet-control-zoom a:last-child { border-bottom-left-radius: var(--border-radius-base); border-bottom-right-radius: var(--border-radius-base); }
+.leaflet-control-zoom a + a { border-top: 1px solid rgba(0,0,0,0.08); } /* Subtle separator */
+
+/* Ensure the custom div icon styling is also clean */
+.custom-div-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 3px solid white;
+}
+
+/* --- STYLING BARU UNTUK TOMBOL UNDUH --- */
+.download-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.download-container label {
+    font-weight: 500;
+    color: var(--light-text-color);
+    font-size: 15px;
+}
+
+.download-container select {
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--border-radius-base);
+    border: 2px solid var(--border-color);
+    background-color: #f9fbfd;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.download-container select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+}
+
+.download-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius-base);
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.download-button:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-medium);
+}
+
+.download-button i {
+    font-size: 18px;
+}

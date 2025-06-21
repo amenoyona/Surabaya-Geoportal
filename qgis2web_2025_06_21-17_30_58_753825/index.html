@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+        <title>Peta Kualitas Air Tambak</title>
+    </head>
+    <body>
+        <!-- Header -->
+        <div class="header-container">
+            <h1 class="main-title">Peta Kualitas Air Tambak</h1>
+            <p class="sub-title">Aquafish: Water Quality Monitoring</p>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title"><i class="fas fa-layer-group"></i> Layer Peta</h3>
+                <div id="layer-control"></div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title"><i class="fas fa-info-circle"></i> Tentang Peta</h3>
+                <p class="abstract-content">
+                    Peta ini memberikan informasi tentang kualitas air tambak yang diperoleh dari pengolahan menggunakan data citra sentinel-2 dan juga menggunakan akuisisi menggunakan teknologi GNSS-RTK dengan akurasi ketelitian 2 cm. Adapun peta ini dihasilkan dari hasil kerja sama dengan Komunitas Petani Tambak Lokal wilayah Kecamatan Bulak Banteng.
+                </p>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title"><i class="fas fa-map-marked-alt"></i> Legenda</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: rgba(255,255,255,1.0);"></div>
+                    <span class="legend-label">Tidak diketahui</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: rgba(255,128,128,1.0);"></div>
+                    <span class="legend-label">Sehat</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: rgba(255,0,0,1.0);"></div>
+                    <span class="legend-label">Tercemar Ringan</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title"><i class="fas fa-download"></i> Unduh Data</h3>
+                <div class="download-buttons">
+                    <button onclick="downloadGeoJSON()" class="download-btn">
+                        <i class="fas fa-file-code"></i> Unduh GeoJSON
+                    </button>
+                    <a href="data/Kualitasair.zip" download class="download-btn">
+                        <i class="fas fa-file-archive"></i> Unduh SHP (Zipped)
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side Controls -->
+        <div class="right-controls">
+            <div class="zoom-control">
+                <a href="#" id="zoom-in" title="Zoom In">+</a>
+                <a href="#" id="zoom-out" title="Zoom Out">−</a>
+            </div>
+        </div>
+        
+        <!-- Map Container -->
+        <div id="map"></div>
+        
+        <!-- Scripts -->
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="data/KualitasAirTambak_2.js"></script>
+        <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>

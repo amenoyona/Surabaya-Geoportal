@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spatial Intelligence Portal - Geoportal</title>
+    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+
+<body class="light-mode">
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo">
+                    <div class="logo-text">SPATIAL<br>INTELLIGENCE<br>PORTAL</div>
+                </div>
+            </div>
+            <p class="subtitle">
+                Spatial Intelligence Portal adalah sebuah platform terpadu yang menghadirkan berbagai tema WebGIS dalam satu tampilan antarmuka yang dinamis dan mudah diakses. Melalui integrasi data spasial dari berbagai sektor, geoportal ini menjadi pusat informasi geospasial yang mendukung perencanaan, pengambilan keputusan, serta transparansi data publik.
+            </p>
+            <p class="subtitle"><span class="highlight">Liveable • Investable • Visitable • E-City</span></p>
+            <p class="subtitle">Portal ini juga dibangun untuk mendukung Kebijakan Satu Peta Pemerintah Republik Indonesia.</p>
+        </header>
+
+        <button class="explore-button" onclick="explorePortal()">🗺️ Menjelajahi Portal</button>
+
+        <div class="video-section">
+            <div class="video-container">
+                <div class="video-title">📹 Teaser Spatial Intelligence Geoportal</div>
+                <video width="100%" controls style="border-radius: 15px; margin-top: 1rem;">
+                    <source src="teaser.mp4" type="video/mp4">
+                    Browser Anda tidak mendukung tag video.
+                </video>
+                <p style="color: #666; margin-top: 1rem;">Tonton video panduan untuk memahami fitur-fitur portal</p>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" onclick="loadAquaFish()">
+                <div>
+                    <div class="stat-icon">🐟</div>
+                    <div class="stat-number">AquaFish</div>
+                    <div class="stat-label">Sistem Monitoring</div>
+                </div>
+                <div class="stat-sublabel">Tingkat Kualitas Air Tambak<br>Kelurahan Bulak Banteng</div>
+            </div>
+            <div class="stat-card" onclick="loadSurabayaFloodMap()">
+                <div>
+                    <div class="stat-icon">🌧️</div>
+                    <div class="stat-number">SurabayaFlood</div>
+                    <div class="stat-label">Peta Rawan Banjir</div>
+                </div>
+                <div class="stat-sublabel">Analisis Spasial<br>Kota Surabaya</div>
+            </div>
+            <div class="stat-card" onclick="loadRoadDamageMap()">
+                <div>
+                    <div class="stat-icon">🚧</div>
+                    <div class="stat-number">RoadDamage</div>
+                    <div class="stat-label">Kerusakan Jalan</div>
+                </div>
+                <div class="stat-sublabel">Data Titik Kerusakan<br>Kelurahan Kenjeran</div>
+            </div>
+            <div class="stat-card" onclick="loadSiPutih()">
+                <div>
+                    <div class="stat-icon">🚗</div>
+                    <div class="stat-number">SiPutih</div>
+                    <div class="stat-label">Sistem Pantau Kemacetan</div>
+                </div>
+                <div class="stat-sublabel">Data Kemacetan Lalu Lintas<br>Wilayah Keputih</div>
+            </div>
+            <div class="stat-card" onclick="loadLSTSurabayaMap()">
+                <div>
+                    <div class="stat-icon">🌡️</div>
+                    <div class="stat-number">LST Surabaya</div>
+                    <div class="stat-label">Suhu Permukaan</div>
+                </div>
+                <div class="stat-sublabel">Analisis Urban Heat Island<br>Kota Surabaya</div>
+            </div>
+            <div class="stat-card" onclick="loadBioporiMap()">
+                <div>
+                    <div class="stat-icon">🌱</div>
+                    <div class="stat-number">Sebaran Biopori</div>
+                    <div class="stat-label">Resapan Air Hujan</div>
+                </div>
+                <div class="stat-sublabel">Konservasi Air Tanah<br>Kota Surabaya</div>
+            </div>
+            <div class="stat-card" onclick="loadLOSDisplacementMap()">
+                <div>
+                    <div class="stat-icon">📉</div>
+                    <div class="stat-number">LOS Displacement</div>
+                    <div class="stat-label">Penurunan Tanah</div>
+                </div>
+                <div class="stat-sublabel">Analisis InSAR<br>Kota Surabaya</div>
+            </div>
+        </div>
+
+        <div class="aquafish-integration" id="aquafish-section">
+            <h3 class="integration-title">🐟 Integrasi AquaFish</h3>
+            <p class="integration-description">Sistem terintegrasi untuk monitoring dan analisis data perikanan dan kelautan. Menyediakan data real-time kualitas air tambak dan rekomendasi pengelolaan.</p>
+            <button class="explore-button" onclick="loadAquaFish()">🚀 Akses AquaFish System</button>
+        </div>
+        <div class="surabayaflood-integration" id="surabayaflood-section">
+            <h3 class="integration-title">🌧️ Integrasi Peta Rawan Banjir</h3>
+            <p class="integration-description">Menyajikan informasi potensi kerawanan banjir di Surabaya berdasarkan analisis spasial multikriteria.</p>
+            <button class="explore-button" onclick="loadSurabayaFloodMap()">🚀 Akses Peta Banjir</button>
+        </div>
+        <div class="roaddamage-integration" id="roaddamage-section">
+            <h3 class="integration-title">🚧 Integrasi Peta Kerusakan Jalan</h3>
+            <p class="integration-description">Memvisualisasikan persebaran titik kerusakan jalan di Kenjeran untuk mendukung pemeliharaan infrastruktur.</p>
+            <button class="explore-button" onclick="loadRoadDamageMap()">🚀 Akses Peta Kerusakan Jalan</button>
+        </div>
+        <div class="siputih-integration" id="siputih-section">
+            <h3 class="integration-title">🚗 Integrasi SiPutih</h3>
+            <p class="integration-description">Menyediakan informasi dan analisis real-time terkait data kemacetan lalu lintas di wilayah Keputih.</p>
+            <button class="explore-button" onclick="loadSiPutih()">🚀 Akses SiPutih System</button>
+        </div>
+        <div class="lstsurabaya-integration" id="lstsurabaya-section">
+            <h3 class="integration-title">🌡️ Integrasi Peta LST Surabaya</h3>
+            <p class="integration-description">Memvisualisasikan data suhu permukaan tanah (Land Surface Temperature) di seluruh wilayah Kota Surabaya untuk analisis iklim mikro dan area panas perkotaan (Urban Heat Island).</p>
+            <button class="explore-button" onclick="loadLSTSurabayaMap()">🚀 Akses Peta LST</button>
+        </div>
+        <div class="bioporimap-integration" id="biopori-section">
+            <h3 class="integration-title">🌱 Integrasi Peta Sebaran Biopori</h3>
+            <p class="integration-description">Memetakan distribusi lubang resapan biopori di Kota Surabaya sebagai upaya konservasi air tanah dan pencegahan genangan air.</p>
+            <button class="explore-button" onclick="loadBioporiMap()">🚀 Akses Peta Biopori</button>
+        </div>
+        <div class="losdisplacement-integration" id="losdisplacement-section">
+            <h3 class="integration-title">📉 Integrasi Peta LOS Displacement</h3>
+            <p class="integration-description">Menampilkan analisis L-band InSAR untuk memantau pergerakan dan penurunan muka tanah (Land Subsidence) di wilayah Surabaya.</p>
+            <button class="explore-button" onclick="loadLOSDisplacementMap()">🚀 Akses Peta Displacement</button>
+        </div>
+
+        <div class="dashboard-section">
+            <div class="dashboard-header">
+                <h3><i class="fas fa-chart-line"></i> Dashboard Informasi</h3>
+            </div>
+            <div class="dashboard-grid">
+                <div class="weather-widget">
+                    <h4>Cuaca Terkini Surabaya</h4>
+                    <div class="weather-main">
+                        <i class="fas fa-sun weather-icon"></i>
+                        <div class="weather-details">
+                            <p class="weather-temp">32°C</p>
+                            <p class="weather-desc">Cerah Berawan</p>
+                        </div>
+                    </div>
+                    <div class="weather-time" id="live-time"></div>
+                </div>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <i class="fas fa-map"></i>
+                        <p class="kpi-number">7</p>
+                        <p class="kpi-label">Peta Terintegrasi</p>
+                    </div>
+                    <div class="kpi-card">
+                        <i class="fas fa-road-circle-exclamation"></i>
+                        <p class="kpi-number">90</p>
+                        <p class="kpi-label">Titik Kerusakan</p>
+                    </div>
+                    <div class="kpi-card">
+                        <i class="fas fa-house-flood-water"></i>
+                        <p class="kpi-number">4</p>
+                        <p class="kpi-label">Kelas Rawan Banjir</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="news-section">
+            <div class="news-header">
+                <h3><i class="fas fa-newspaper"></i> Berita Spasial Terkini</h3>
+            </div>
+            <div class="news-grid">
+                <div class="news-card">
+                    <img src="https://via.placeholder.com/400x250/3498db/ffffff?text=Infrastruktur" alt="Gambar berita infrastruktur">
+                    <div class="news-content">
+                        <span class="news-category">Infrastruktur</span>
+                        <h4 class="news-title">Pemkot Surabaya Percepat Perbaikan Jalan di Wilayah Timur</h4>
+                        <a href="#" class="news-link">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="https://via.placeholder.com/400x250/2ecc71/ffffff?text=Lingkungan" alt="Gambar berita lingkungan">
+                    <div class="news-content">
+                        <span class="news-category">Lingkungan</span>
+                        <h4 class="news-title">Program Mitigasi Banjir Baru Diluncurkan untuk Hadapi Musim Hujan</h4>
+                         <a href="#" class="news-link">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="https://via.placeholder.com/400x250/e74c3c/ffffff?text=Teknologi" alt="Gambar berita teknologi GIS">
+                     <div class="news-content">
+                        <span class="news-category">Teknologi GIS</span>
+                        <h4 class="news-title">Pemanfaatan Drone untuk Pemetaan Area Terdampak Penurunan Tanah</h4>
+                        <a href="#" class="news-link">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="supporter-section">
+            <h3 class="supporter-title">Didukung Oleh</h3>
+            <div class="supporter-logos">
+                <img src="Geomatika.png" alt="Logo Instansi">
+                <img src="ITS.png" alt="Logo ITS">
+                <img src="Fieldcamp.png" alt="Logo Fieldcamp">
+            </div>
+        </div>
+
+    </div>
+
+    <button class="scroll-indicator" onclick="scrollToTop()" title="Kembali ke atas">↑</button>
+    <div class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></div>
+    
+    <script src="script1.js"></script>
+</body>
+</html>

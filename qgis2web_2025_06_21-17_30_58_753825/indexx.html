@@ -1,0 +1,501 @@
+    <!doctype html>
+    <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+            <meta name="mobile-web-app-capable" content="yes">
+            <meta name="apple-mobile-web-app-capable" content="yes">
+            <link rel="stylesheet" href="css/leaflet.css">
+            <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+            <link rel="stylesheet" href="css/qgis2web.css">
+            <link rel="stylesheet" href="css/fontawesome-all.min.css">
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+            <style>
+            * {
+                font-family: 'Poppins', sans-serif;
+                box-sizing: border-box;
+            }
+            
+            html, body {
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                margin: 0;
+                overflow: hidden;
+            }
+            
+            #map {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            
+            /* Header Styles */
+            .header-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 1000;
+                background: linear-gradient(135deg, #4a90e2, #50c878);
+                color: white;
+                padding: 15px 20px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+            
+            .main-title {
+                font-size: 24px;
+                font-weight: 700;
+                margin: 0;
+                padding: 0;
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            }
+            
+            .sub-title {
+                font-size: 14px;
+                font-weight: 400;
+                margin: 5px 0 0 0;
+                opacity: 0.9;
+            }
+            
+            /* Sidebar Styles */
+            .sidebar {
+                position: absolute;
+                top: 100px;
+                left: 10px;
+                z-index: 1000;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                width: 300px;
+                padding: 15px;
+                max-height: calc(100% - 150px);
+                overflow-y: auto;
+                transition: all 0.3s ease;
+            }
+            
+            .sidebar-section {
+                margin-bottom: 20px;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 15px;
+            }
+            
+            .sidebar-section:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+            
+            .sidebar-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .sidebar-title i {
+                margin-right: 8px;
+                color: #4a90e2;
+            }
+            
+            .abstract-content {
+                font-size: 13px;
+                line-height: 1.5;
+                color: #555;
+                text-align: justify;
+                text-justify: inter-word;
+            }
+            
+            .legend-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            
+            .legend-color {
+                width: 20px;
+                height: 20px;
+                margin-right: 10px;
+                border: 1px solid #ddd;
+            }
+            
+            .legend-label {
+                font-size: 13px;
+            }
+            
+            /* Download Buttons */
+            .download-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .download-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 12px;
+                background: #4a90e2;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 13px;
+                transition: all 0.2s ease;
+                text-decoration: none;
+            }
+            
+            .download-btn:hover {
+                background: #3a7bc8;
+                transform: translateY(-2px);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            
+            .download-btn i {
+                margin-right: 8px;
+            }
+            
+            /* Right Side Controls */
+            .right-controls {
+                position: absolute;
+                top: 100px;
+                right: 10px;
+                z-index: 1000;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .zoom-control {
+                background: white;
+                border-radius: 5px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                overflow: hidden;
+            }
+            
+            .zoom-control a {
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+                display: block;
+                color: #333;
+                text-decoration: none;
+                font-size: 18px;
+                font-weight: bold;
+            }
+            
+            .zoom-control a:hover {
+                background-color: #f5f5f5;
+            }
+            
+            .zoom-control a:first-child {
+                border-bottom: 1px solid #eee;
+            }
+            
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .sidebar {
+                    width: 250px;
+                    top: 120px;
+                }
+                
+                .main-title {
+                    font-size: 20px;
+                }
+                
+                .sub-title {
+                    font-size: 12px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .sidebar {
+                    width: 220px;
+                    padding: 10px;
+                }
+                
+                .header-container {
+                    padding: 10px 15px;
+                }
+                
+                .right-controls {
+                    top: 120px;
+                }
+            }
+            </style>
+            <title>Peta Kualitas Air Tambak</title>
+        </head>
+        <body>
+            <!-- Header -->
+            <div class="header-container">
+                <h1 class="main-title">Peta Kualitas Air Tambak</h1>
+                <p class="sub-title">Aquafish: Water Quality Monitoring</p>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-layer-group"></i> Layer Peta</h3>
+                    <div id="layer-control"></div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-info-circle"></i> Tentang Peta</h3>
+                    <p class="abstract-content">
+                        Peta ini memberikan informasi tentang kualitas air tambak yang diperoleh dari pengolahan menggunakan data citra sentinel-2 dan juga menggunakan akuisisi menggunakan teknologi GNSS-RTK dengan akurasi ketelitian 2 cm. Adapun peta ini dihasilkan dari hasil kerja sama dengan Komunitas Petani Tambak Lokal wilayah Kecamatan Bulak Banteng.
+                    </p>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-map-marked-alt"></i> Legenda</h3>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(255,255,255,1.0);"></div>
+                        <span class="legend-label">Tidak diketahui</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(255,128,128,1.0);"></div>
+                        <span class="legend-label">Sehat</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(255,0,0,1.0);"></div>
+                        <span class="legend-label">Tercemar Ringan</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-download"></i> Unduh Data</h3>
+                    <div class="download-buttons">
+                        <button onclick="downloadGeoJSON()" class="download-btn">
+                            <i class="fas fa-file-code"></i> Unduh GeoJSON
+                        </button>
+                        <a href="data/Kualitasair.zip" download class="download-btn">
+                            <i class="fas fa-file-archive"></i> Unduh SHP (Zipped)
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side Controls -->
+            <div class="right-controls">
+                <div class="zoom-control">
+                    <a href="#" id="zoom-in" title="Zoom In">+</a>
+                    <a href="#" id="zoom-out" title="Zoom Out">−</a>
+                </div>
+            </div>
+            
+            <!-- Map Container -->
+            <div id="map"></div>
+            
+            <!-- Scripts -->
+            <script src="js/qgis2web_expressions.js"></script>
+            <script src="js/leaflet.js"></script>
+            <script src="js/L.Control.Layers.Tree.min.js"></script>
+            <script src="js/leaflet.rotatedMarker.js"></script>
+            <script src="js/leaflet.pattern.js"></script>
+            <script src="js/leaflet-hash.js"></script>
+            <script src="js/Autolinker.min.js"></script>
+            <script src="js/rbush.min.js"></script>
+            <script src="js/labelgun.min.js"></script>
+            <script src="js/labels.js"></script>
+            <script src="data/KualitasAirTambak_2.js"></script>
+            <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+            <script>
+            var map = L.map('map', {
+                zoomControl: false, // Disable default zoom control
+                maxZoom: 28, 
+                minZoom: 1
+            }).fitBounds([[-7.209662951385012,112.7550954665409],[-7.1962372288105,112.7739516730216]]);
+            
+            var hash = new L.Hash(map);
+            map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+            var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+            
+            // Custom zoom control
+            document.getElementById('zoom-in').addEventListener('click', function(e) {
+                e.preventDefault();
+                map.zoomIn();
+            });
+            
+            document.getElementById('zoom-out').addEventListener('click', function(e) {
+                e.preventDefault();
+                map.zoomOut();
+            });
+            
+            // remove popup's row if "visible-with-data"
+            function removeEmptyRowsFromPopupContent(content, feature) {
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            var rows = tempDiv.querySelectorAll('tr');
+            for (var i = 0; i < rows.length; i++) {
+                var td = rows[i].querySelector('td.visible-with-data');
+                var key = td ? td.id : '';
+                if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                    rows[i].parentNode.removeChild(rows[i]);
+                }
+            }
+            return tempDiv.innerHTML;
+            }
+            
+            // add class to format popup if it contains media
+            function addClassToPopupIfMedia(content, popup) {
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = content;
+                if (tempDiv.querySelector('td img')) {
+                    popup._contentNode.classList.add('media');
+                        // Delay to force the redraw
+                        setTimeout(function() {
+                            popup.update();
+                        }, 10);
+                } else {
+                    popup._contentNode.classList.remove('media');
+                }
+            }
+            
+            // Create base layers
+            map.createPane('pane_ESRISatellite_0');
+            map.getPane('pane_ESRISatellite_0').style.zIndex = 400;
+            var layer_ESRISatellite_0 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                pane: 'pane_ESRISatellite_0',
+                opacity: 1.0,
+                attribution: '',
+                minZoom: 1,
+                maxZoom: 28,
+                minNativeZoom: 0,
+                maxNativeZoom: 20
+            });
+            
+            map.createPane('pane_OSMStandard_1');
+            map.getPane('pane_OSMStandard_1').style.zIndex = 401;
+            var layer_OSMStandard_1 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                pane: 'pane_OSMStandard_1',
+                opacity: 1.0,
+                attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
+                minZoom: 1,
+                maxZoom: 28,
+                minNativeZoom: 0,
+                maxNativeZoom: 19
+            });
+            
+            // Add default base layer
+            map.addLayer(layer_ESRISatellite_0);
+            
+            // Style and add the main data layer
+            function pop_KualitasAirTambak_2(feature, layer) {
+                var popupContent = '<table>\
+                        <tr>\
+                            <th scope="row">Luas Area Tambak</th>\
+                            <td>' + (feature.properties['Luas_Area'] !== null ? autolinker.link(String(feature.properties['Luas_Area']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        </tr>\
+                        <tr>\
+                            <th scope="row">Indeks Kualitas Air Tambak</th>\
+                            <td>' + (feature.properties['IP__Indeks'] !== null ? autolinker.link(String(feature.properties['IP__Indeks']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        </tr>\
+                        <tr>\
+                            <th scope="row">Keterangan</th>\
+                            <td>' + (feature.properties['Status'] !== null ? autolinker.link(String(feature.properties['Status']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        </tr>\
+                    </table>';
+                var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+                layer.on('popupopen', function(e) {
+                    addClassToPopupIfMedia(content, e.popup);
+                });
+                layer.bindPopup(content, { maxHeight: 400 });
+            }
+
+            function style_KualitasAirTambak_2_0(feature) {
+                if (feature.properties['IP__Indeks'] >= 0.000000 && feature.properties['IP__Indeks'] <= 0.000000 ) {
+                    return {
+                    pane: 'pane_KualitasAirTambak_2',
+                    opacity: 1,
+                    color: 'rgba(35,35,35,1.0)',
+                    dashArray: '',
+                    lineCap: 'butt',
+                    lineJoin: 'miter',
+                    weight: 1.0, 
+                    fill: true,
+                    fillOpacity: 1,
+                    fillColor: 'rgba(255,255,255,1.0)',
+                    interactive: true,
+                }
+                }
+                if (feature.properties['IP__Indeks'] >= 0.000000 && feature.properties['IP__Indeks'] <= 1.000000 ) {
+                    return {
+                    pane: 'pane_KualitasAirTambak_2',
+                    opacity: 1,
+                    color: 'rgba(35,35,35,1.0)',
+                    dashArray: '',
+                    lineCap: 'butt',
+                    lineJoin: 'miter',
+                    weight: 1.0, 
+                    fill: true,
+                    fillOpacity: 1,
+                    fillColor: 'rgba(255,128,128,1.0)',
+                    interactive: true,
+                }
+                }
+                if (feature.properties['IP__Indeks'] >= 1.000000 && feature.properties['IP__Indeks'] <= 1.814000 ) {
+                    return {
+                    pane: 'pane_KualitasAirTambak_2',
+                    opacity: 1,
+                    color: 'rgba(35,35,35,1.0)',
+                    dashArray: '',
+                    lineCap: 'butt',
+                    lineJoin: 'miter',
+                    weight: 1.0, 
+                    fill: true,
+                    fillOpacity: 1,
+                    fillColor: 'rgba(255,0,0,1.0)',
+                    interactive: true,
+                }
+                }
+            }
+            
+            map.createPane('pane_KualitasAirTambak_2');
+            map.getPane('pane_KualitasAirTambak_2').style.zIndex = 402;
+            map.getPane('pane_KualitasAirTambak_2').style['mix-blend-mode'] = 'normal';
+            var layer_KualitasAirTambak_2 = new L.geoJson(json_KualitasAirTambak_2, {
+                attribution: '',
+                interactive: true,
+                dataVar: 'json_KualitasAirTambak_2',
+                layerName: 'layer_KualitasAirTambak_2',
+                pane: 'pane_KualitasAirTambak_2',
+                onEachFeature: pop_KualitasAirTambak_2,
+                style: style_KualitasAirTambak_2_0,
+            });
+            
+            map.addLayer(layer_KualitasAirTambak_2);
+            
+            // Layer control
+            var overlaysTree = [
+                {label: 'Kualitas Air Tambak', layer: layer_KualitasAirTambak_2},
+                {label: "OSM Standard", layer: layer_OSMStandard_1},
+                {label: "ESRI Satellite", layer: layer_ESRISatellite_0},
+            ];
+            
+            var lay = L.control.layers.tree(null, overlaysTree, {
+                collapsed: false,
+                container: document.getElementById('layer-control')
+            });
+            
+            lay.addTo(map);
+            
+            // Download GeoJSON function
+            function downloadGeoJSON() {
+                var geojsonData = layer_KualitasAirTambak_2.toGeoJSON();
+                var blob = new Blob([JSON.stringify(geojsonData)], {type: "application/vnd.geo+json"});
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = "Kualitasair.geojson";
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            </script>
+        </body>
+    </html>

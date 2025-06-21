@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ecf0f1;
+            overflow: hidden;
+        }
+
+        /* Header Styling */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(44, 62, 80, 0.9);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .header-title {
+            color: white;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-subtitle {
+            color: #bdc3c7;
+            margin: 0;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Map Container */
+        #map {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            right: 0;
+            bottom: 60px;
+            width: 100%;
+        }
+
+        /* Footer Styling */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(44, 62, 80, 0.9);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #bdc3c7;
+            font-size: 12px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Enhanced Download Buttons */
+        .download-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            text-decoration: none;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+
+        .download-btn.shapefile {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+        }
+
+        .download-btn.shapefile:hover {
+            background: linear-gradient(135deg, #d35400, #e67e22);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.4);
+        }
+
+        /* Basemap Selector */
+        .basemap-selector {
+            position: absolute;
+            top: 85px;
+            right: 15px;
+            z-index: 1000;
+        }
+        
+        .basemap-container {
+             background: rgba(255,255,255,0.95);
+             border-radius: 12px;
+             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+             overflow: hidden;
+             transition: all 0.3s ease;
+             backdrop-filter: blur(10px);
+        }
+
+        .basemap-toggle {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            width: 100%;
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .basemap-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
+        }
+
+        .basemap-options {
+            display: none;
+            padding: 5px;
+        }
+
+        .basemap-options.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .basemap-option {
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+        
+        .basemap-option:hover {
+            background: #f1f1f1;
+        }
+
+        .basemap-option.active {
+            background: #eaf5e9;
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        /* Custom Control Styling */
+        .leaflet-control-container .leaflet-control {
+            border-radius: 12px !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+            border: none !important;
+        }
+        
+        .leaflet-control-zoom a {
+            background: rgba(255,255,255,0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            color: #2c3e50 !important;
+            font-weight: 600 !important;
+            font-size: 16px !important;
+            transition: all 0.3s ease !important;
+        }
+        .leaflet-control-zoom a:hover {
+            background: #3498db !important;
+            color: white !important;
+        }
+        
+        .custom-popup .leaflet-popup-content-wrapper {
+             background: rgba(255,255,255,0.95);
+             backdrop-filter: blur(10px);
+             border-radius: 12px;
+             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .custom-popup .leaflet-popup-tip {
+            background: transparent;
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-left-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header { padding: 0 15px; height: 60px; }
+            .header-title { font-size: 16px; }
+            .header-subtitle, .header-btn { display: none; }
+            .logo { width: 40px; height: 40px; font-size: 18px;}
+            #map { top: 60px; bottom: 100px; }
+            .footer { height: 100px; flex-direction: column; justify-content: center; gap: 10px; padding: 10px;}
+            .footer-left { gap: 8px; font-size: 10px; }
+            .basemap-selector { top: 75px; right: 10px; }
+            .download-btn { padding: 10px 14px; font-size: 12px; }
+        }
+        </style>
+        <title>Peta Land Surface Temperature Kota Surabaya</title>
+    </head>
+    <body>
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <div>Memuat Peta LST Surabaya...</div>
+        </div>
+
+        <div class="header">
+            <div class="header-left">
+                <div class="logo"><i class="fas fa-thermometer-half"></i></div>
+                <div>
+                    <h1 class="header-title">LST Surabaya 2024</h1>
+                    <p class="header-subtitle">Land Surface Temperature Monitoring</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-btn" onclick="toggleAbstract()">
+                    <i class="fas fa-info-circle"></i> Info
+                </button>
+                <button class="header-btn" onclick="resetView()">
+                    <i class="fas fa-home"></i> Reset View
+                </button>
+            </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="basemap-selector">
+             <div class="basemap-container">
+                 <button class="basemap-toggle" onclick="toggleBasemapOptions()">
+                     <span><i class="fas fa-layer-group"></i> Basemap</span>
+                     <i class="fas fa-chevron-down" id="basemapChevron"></i>
+                 </button>
+                 <div class="basemap-options" id="basemapOptions">
+                     <div class="basemap-option active" onclick="changeBasemap('osm', event)">
+                         <i class="fas fa-map"></i> OpenStreetMap
+                     </div>
+                     <div class="basemap-option" onclick="changeBasemap('satellite', event)">
+                         <i class="fas fa-satellite"></i> Satellite
+                     </div>
+                     <div class="basemap-option" onclick="changeBasemap('terrain', event)">
+                         <i class="fas fa-mountain"></i> Terrain
+                     </div>
+                     <div class="basemap-option" onclick="changeBasemap('dark', event)">
+                         <i class="fas fa-moon"></i> Dark Mode
+                     </div>
+                 </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-left">
+                <div><i class="fas fa-copyright"></i> 2025 LST Surabaya Project</div>
+                <div>|</div>
+                <div><i class="fas fa-database"></i> Data: Landsat 8/9</div>
+                <div>|</div>
+                <div id="clock"></div>
+            </div>
+            <div class="footer-right">
+                <button class="download-btn" onclick="downloadLSTGeoJSON()">
+                    <i class="fas fa-download"></i> GeoJSON
+                </button>
+                <a href="data/LST SURABAYA.zip" download="LST_Surabaya_Data_SHP.zip" class="download-btn shapefile">
+                    <i class="fas fa-file-zipper"></i> Shapefile
+                </a>
+            </div>
+        </div>
+
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="data/LSTSURABAYALST_1.js"></script>
+
+        <script>
+        // --- GLOBAL VARIABLES ---
+        let currentBasemap = 'osm';
+        let basemapLayers = {};
+        const initialBounds = [[-7.346871512885985,112.56594863342146],[-7.1765389217080315,112.83632977095296]];
+
+        // --- MAP INITIALIZATION ---
+        var map = L.map('map', {
+            zoomControl: false, maxZoom: 28, minZoom: 1
+        }).fitBounds(initialBounds);
+
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+
+        // --- UI & UTILITY FUNCTIONS ---
+        function toggleBasemapOptions() {
+            const options = document.getElementById('basemapOptions');
+            const chevron = document.getElementById('basemapChevron');
+            options.classList.toggle('show');
+            chevron.style.transform = options.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function changeBasemap(type, event) {
+            if (basemapLayers[currentBasemap]) map.removeLayer(basemapLayers[currentBasemap]);
+            map.addLayer(basemapLayers[type]);
+            currentBasemap = type;
+            document.querySelectorAll('.basemap-option').forEach(opt => opt.classList.remove('active'));
+            event.target.closest('.basemap-option').classList.add('active');
+        }
+
+        function resetView() { map.fitBounds(initialBounds); }
+
+        function toggleAbstract() {
+            var abstractDiv = document.getElementById('abstract');
+            if (abstractDiv.style.display === "none" || abstractDiv.style.display === "") {
+                abstractDiv.style.display = "block";
+            } else {
+                abstractDiv.style.display = "none";
+            }
+        }
+        
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jakarta' };
+            document.getElementById('clock').innerHTML = `<i class="fas fa-clock"></i> ${now.toLocaleDateString('id-ID', options)} WIB`;
+        }
+
+        function downloadLSTGeoJSON() {
+            var geojsonData = layer_LSTSURABAYALST_1.toGeoJSON();
+            var blob = new Blob([JSON.stringify(geojsonData)], {type: "application/vnd.geo+json"});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = "LST_Surabaya.geojson";
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        }
+
+        // --- BASEMAPS INITIALIZATION ---
+        function initBasemapLayers() {
+            basemapLayers.osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' });
+            basemapLayers.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri' });
+            basemapLayers.terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg', { attribution: '© Stamen Design' });
+            basemapLayers.dark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', { attribution: '© Stadia Maps' });
+            map.addLayer(basemapLayers.osm);
+        }
+
+        // --- LST LAYER ---
+        var bounds_group = new L.featureGroup([]);
+        function pop_LSTSURABAYALST_1(feature, layer) {
+            var popupContent = `<table style="border-collapse: collapse; width: 100%;">
+                <tr style="background-color: #f8f9fa;">
+                    <th scope="row" style="padding: 10px; font-weight: 600; color: #e74c3c;"><i class="fas fa-thermometer-half"></i> Suhu</th>
+                    <td style="padding: 10px;">${(feature.properties['LST'] !== null ? autolinker.link(String(feature.properties['LST'])) : '')}°C</td>
+                </tr>
+                <tr>
+                    <th scope="row" style="padding: 10px; font-weight: 600; color: #27ae60;"><i class="fas fa-expand-arrows-alt"></i> Luas</th>
+                    <td style="padding: 10px;">${(feature.properties['Luas'] !== null ? autolinker.link(String(feature.properties['Luas'].toLocaleString('id-ID'))) : '')} m²</td>
+                </tr>
+            </table>`;
+            layer.bindPopup(popupContent, { maxHeight: 400, className: 'custom-popup' });
+        }
+
+        function style_LSTSURABAYALST_1_0(feature) {
+            var gridcode = feature.properties['q2wHide_gridcode'];
+            var fillColor = 
+                gridcode <= 1.8 ? '#1a9641' :
+                gridcode <= 2.6 ? '#a6d96a' :
+                gridcode <= 3.4 ? '#ffffbf' :
+                gridcode <= 4.2 ? '#fdae61' : '#d7191c';
+            return {
+                pane: 'pane_LSTSURABAYALST_1', opacity: 1, color: 'rgba(35,35,35,0.5)',
+                dashArray: '', lineCap: 'butt', lineJoin: 'miter', weight: 0.5,
+                fill: true, fillOpacity: 0.75, fillColor: fillColor, interactive: true,
+            };
+        }
+
+        map.createPane('pane_LSTSURABAYALST_1');
+        map.getPane('pane_LSTSURABAYALST_1').style.zIndex = 401;
+        var layer_LSTSURABAYALST_1 = new L.geoJson(json_LSTSURABAYALST_1, {
+            onEachFeature: pop_LSTSURABAYALST_1, style: style_LSTSURABAYALST_1_0, pane: 'pane_LSTSURABAYALST_1'
+        });
+        bounds_group.addLayer(layer_LSTSURABAYALST_1);
+        map.addLayer(layer_LSTSURABAYALST_1);
+
+        // --- CONTROLS ---
+        L.control.zoom({ position: 'topleft' }).addTo(map);
+
+        var abstract = new L.Control({position:'topleft'});
+        abstract.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'leaflet-control');
+            this._div.id = 'abstract';
+            this._div.innerHTML = `<div class="info abstractUncollapsed" style="max-width:250px;">
+                <i class="fas fa-info-circle" style="color: #3498db; margin-right: 8px;"></i>Peta ini memberikan informasi mengenai Land Surface Temperature (LST) di Kota Surabaya pada Tahun 2024 menggunakan data dari satelit Landsat.
+                </div>`;
+            this._div.style.display = 'none'; // Initially hidden
+            return this._div;
+        };
+        abstract.addTo(map);
+
+        var overlaysTree = [
+            {
+                label: `<div style="font-weight: 600; color: #2c3e50;"><i class="fas fa-temperature-high" style="color: #e74c3c;"></i> Legenda Suhu</div>`,
+                children: [
+                    {label: "<img src='legend/LSTSURABAYALST_1_Panas4.png' /> Panas", layer: L.featureGroup()},
+                    {label: "<img src='legend/LSTSURABAYALST_1_Hangat3.png' /> Hangat", layer: L.featureGroup()},
+                    {label: "<img src='legend/LSTSURABAYALST_1_Normal2.png' /> Normal", layer: L.featureGroup()},
+                    {label: "<img src='legend/LSTSURABAYALST_1_Sejuk1.png' /> Sejuk", layer: L.featureGroup()},
+                    {label: "<img src='legend/LSTSURABAYALST_1_Dingin0.png' /> Dingin", layer: L.featureGroup()},
+                ]
+            }
+        ];
+        
+        var layerTree = L.control.layers.tree(null, overlaysTree, {
+            collapsed: false,
+            position: 'topleft'
+        });
+        // We create the legend control, but don't add it to the map to avoid redundancy with the main layer
+        // layerTree.addTo(map);
+
+        // --- APP STARTUP ---
+        window.onload = function() {
+            initBasemapLayers();
+            updateClock();
+            setInterval(updateClock, 1000);
+            // Fade out loading overlay
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => { loadingOverlay.style.display = 'none'; }, 500);
+        };
+        </script>
+    </body>
+</html>

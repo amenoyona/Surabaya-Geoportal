@@ -1,0 +1,237 @@
+/* ===================================================================
+   BASE & GENERAL LAYOUT STYLES
+=================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.5s ease, color 0.5s ease;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Header & Logo */
+.header { margin-bottom: 4rem; }
+.logo-container { display: flex; justify-content: center; align-items: center; margin-bottom: 3rem; }
+.logo {
+    width: 500px;
+    height: 200px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+.logo-text { font-size: 3.2rem; font-weight: 900; letter-spacing: 2px; line-height: 1.1; }
+.logo:hover .logo-text { transform: translateY(-5px); text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
+.subtitle { font-size: 1.2rem; margin-bottom: 1.5rem; line-height: 1.8; max-width: 1000px; margin-left: auto; margin-right: auto; }
+
+/* Tombol Utama */
+.explore-button {
+    border: none;
+    padding: 1.2rem 4rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 60px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 2rem;
+    letter-spacing: 1px;
+}
+
+/* Video */
+.video-section { margin: 4rem 0; }
+.video-container { border-radius: 20px; padding: 3rem; margin: 2rem auto; max-width: 600px; }
+.video-title { font-size: 1.4rem; margin-bottom: 1rem; font-weight: 600; }
+
+/* Grid Kartu Statistik */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; margin: 4rem 0; }
+.stat-card {
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 20px 20px 0 0; }
+.stat-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; }
+.stat-number { font-size: 1.8rem; font-weight: bold; margin-bottom: 0.8rem; }
+.stat-label { font-size: 1.1rem; margin-bottom: 0.8rem; font-weight: 600; }
+.stat-sublabel { font-size: 0.9rem; line-height: 1.4; }
+
+/* ===================================================================
+   SEKSI KONTEN (Dashboard, Berita, Integrasi)
+=================================================================== */
+/* Gaya Umum untuk Semua Seksi Konten */
+.dashboard-section, .news-section, .supporter-section, .aquafish-integration, .siputih-integration, .surabayaflood-integration, .roaddamage-integration, .lstsurabaya-integration, .bioporimap-integration, .losdisplacement-integration {
+    border-radius: 20px;
+    padding: 3rem;
+    margin: 4rem auto;
+    scroll-margin-top: 100px;
+    opacity: 0; /* Untuk animasi */
+    transform: translateY(30px); /* Untuk animasi */
+    transition: all 0.8s ease; /* Untuk animasi */
+}
+
+/* Dashboard & Berita */
+.dashboard-header, .news-header { text-align: left; margin-bottom: 2rem; }
+.dashboard-header h3, .news-header h3 { font-size: 1.8rem; display: inline-block; border-bottom: 3px solid; padding-bottom: 5px; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; text-align: left; }
+.weather-widget { padding: 1.5rem; border-radius: 15px; }
+.weather-widget h4 { margin: 0 0 1rem 0; font-size: 1.2rem; }
+.weather-main { display: flex; align-items: center; gap: 1.5rem; }
+.weather-icon { font-size: 4rem; }
+.weather-details .weather-temp { font-size: 2.5rem; font-weight: 700; margin: 0; line-height: 1; }
+.weather-details .weather-desc { font-size: 1rem; margin: 0; }
+.weather-time { font-size: 1.2rem; font-weight: 600; text-align: center; margin-top: 1.5rem; }
+.kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.kpi-card { text-align: center; padding: 1.5rem; border-radius: 15px; }
+.kpi-card i { font-size: 2.5rem; }
+.kpi-number { font-size: 3rem; font-weight: 700; margin: 0.5rem 0; }
+.kpi-label { font-size: 1rem; margin: 0; }
+.news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; text-align: left; }
+.news-card { border-radius: 15px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.news-card:hover { transform: translateY(-10px); }
+.news-card img { width: 100%; height: 200px; object-fit: cover; }
+.news-content { padding: 1.5rem; }
+.news-category { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; padding: 5px 10px; border-radius: 20px; display: inline-block; margin-bottom: 1rem; }
+.news-title { font-size: 1.2rem; margin: 0 0 1rem 0; }
+.news-link { text-decoration: none; font-weight: 600; }
+
+/* Penjelasan Integrasi Peta */
+.integration-title { font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: 700; }
+.integration-description { font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem; }
+
+/* GAYA BARU UNTUK LOGO PENDUKUNG */
+.supporter-section { text-align: center; padding: 2rem; }
+.supporter-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem; }
+.supporter-logos { display: flex; justify-content: center; align-items: center; gap: 4rem; flex-wrap: wrap; }
+.supporter-logos img { height: 60px; max-width: 150px; object-fit: contain; transition: transform 0.3s ease; }
+.supporter-logos img:hover { transform: scale(1.1); }
+
+/* ===================================================================
+   TEMA: LIGHT MODE
+=================================================================== */
+body.light-mode { background: linear-gradient(135deg, #e0f2f7 0%, #cce7f0 100%); color: #333; }
+body.light-mode .logo { background: linear-gradient(45deg, #a7d9f7, #6a8cdb); box-shadow: 0 15px 50px rgba(0,0,0,0.1); animation: logoGlowLight 3s ease-in-out infinite; }
+body.light-mode .logo-text { color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+@keyframes logoGlowLight { 50% { box-shadow: 0 20px 60px rgba(170,225,255,0.6); transform: scale(1.02); } }
+body.light-mode .highlight { background: linear-gradient(45deg, #4CAF50, #2196F3, #FFC107, #FF5722); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+body.light-mode .video-container, body.light-mode .stat-card, body.light-mode .dashboard-section, body.light-mode .news-card, body.light-mode .supporter-section { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); }
+body.light-mode .stat-card:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+body.light-mode .stat-icon { background: linear-gradient(45deg, #2196F3, #4CAF50); }
+body.light-mode .stat-number { color: #2196F3; }
+body.light-mode .explore-button { background: linear-gradient(45deg, #2196F3, #4CAF50); box-shadow: 0 8px 25px rgba(33,150,243,0.4); color: #fff; }
+body.light-mode .explore-button:hover { box-shadow: 0 12px 35px rgba(33,150,243,0.6); }
+body.light-mode .dashboard-header h3 { border-color: #007bff; color: #0056b3; }
+body.light-mode .news-header h3 { border-color: #e67e22; color: #d35400; }
+body.light-mode .supporter-title { color: #333; }
+body.light-mode .weather-widget { background: #007bff; color: white; }
+body.light-mode .kpi-card { background: #f0f8ff; color: #0056b3; }
+body.light-mode .kpi-card i { color: #007bff; }
+body.light-mode .news-card { box-shadow: 0 5px 20px rgba(0,0,0,0.07); }
+body.light-mode .news-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+body.light-mode .news-category { background: #e67e22; color: white; }
+body.light-mode .news-link { color: #d35400; }
+body.light-mode .aquafish-integration { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.2); }
+body.light-mode .aquafish-integration .integration-title { color: #4CAF50; }
+body.light-mode .siputih-integration { background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.2); }
+body.light-mode .siputih-integration .integration-title { color: #FF8C00; }
+body.light-mode .surabayaflood-integration { background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.2); }
+body.light-mode .surabayaflood-integration .integration-title { color: #c0392b; }
+body.light-mode .roaddamage-integration { background: rgba(243, 156, 18, 0.1); border: 1px solid rgba(243, 156, 18, 0.2); }
+body.light-mode .roaddamage-integration .integration-title { color: #f39c12; }
+body.light-mode .lstsurabaya-integration { background: rgba(255, 87, 34, 0.1); border: 1px solid rgba(255, 87, 34, 0.2); }
+body.light-mode .lstsurabaya-integration .integration-title { color: #FF5722; }
+body.light-mode .bioporimap-integration { background: rgba(32, 201, 151, 0.1); border: 1px solid rgba(32, 201, 151, 0.2); }
+body.light-mode .bioporimap-integration .integration-title { color: #20c997; }
+body.light-mode .losdisplacement-integration { background: rgba(142, 68, 173, 0.1); border: 1px solid rgba(142, 68, 173, 0.2); }
+body.light-mode .losdisplacement-integration .integration-title { color: #8e44ad; }
+
+
+/* ===================================================================
+   TEMA: DARK MODE
+=================================================================== */
+body.dark-mode { background: linear-gradient(135deg, #1e2a3e 0%, #2d4263 100%); color: #f0f4f8; }
+body.dark-mode .logo { background: linear-gradient(45deg, #5ba3f5, #411b73); box-shadow: 0 15px 50px rgba(0,0,0,0.3); animation: logoGlowDark 3s ease-in-out infinite; }
+body.dark-mode .logo-text { color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+@keyframes logoGlowDark { 50% { box-shadow: 0 20px 60px rgba(91,163,245,0.6); transform: scale(1.02); } }
+body.dark-mode .highlight { background: linear-gradient(45deg, #6dd5a8, #5ba3f5, #ffb347, #ff8a95); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+body.dark-mode .video-container, body.dark-mode .stat-card, body.dark-mode .dashboard-section, body.dark-mode .news-card, body.dark-mode .supporter-section { background: rgba(255,255,255,0.12); backdrop-filter: blur(15px); box-shadow: 0 10px 40px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); }
+body.dark-mode .stat-card:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+body.dark-mode .stat-icon { background: linear-gradient(45deg, #5ba3f5, #6dd5a8); }
+body.dark-mode .stat-number { color: #5ba3f5; }
+body.dark-mode .explore-button { background: linear-gradient(45deg, #5ba3f5, #6dd5a8); box-shadow: 0 8px 25px rgba(91,163,245,0.5); color: white; }
+body.dark-mode .explore-button:hover { box-shadow: 0 12px 35px rgba(91,163,245,0.7); }
+body.dark-mode .dashboard-header h3 { color: #58a6ff; border-color: #58a6ff; }
+body.dark-mode .news-header h3 { color: #f1c40f; border-color: #f1c40f; }
+body.dark-mode .supporter-title { color: #f0f4f8; }
+body.dark-mode .supporter-logos img { filter: brightness(0.9) contrast(1.2); }
+body.dark-mode .weather-widget { background: #58a6ff; color: white; }
+body.dark-mode .kpi-card { background: rgba(88, 166, 255, 0.15); color: #adbac7; }
+body.dark-mode .kpi-card i { color: #58a6ff; }
+body.dark-mode .news-card { background: rgba(255,255,255,0.08); }
+body.dark-mode .news-category { background: #f1c40f; color: #1e2a3e; }
+body.dark-mode .news-link { color: #f1c40f; }
+body.dark-mode .aquafish-integration { background: rgba(109,213,168,0.15); border: 1px solid rgba(109,213,168,0.4); }
+body.dark-mode .aquafish-integration .integration-title { color: #6dd5a8; }
+body.dark-mode .siputih-integration { background: rgba(255,165,0,0.15); border: 1px solid rgba(255,165,0,0.4); }
+body.dark-mode .siputih-integration .integration-title { color: #FFA500; }
+body.dark-mode .surabayaflood-integration { background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.4); }
+body.dark-mode .surabayaflood-integration .integration-title { color: #e74c3c; }
+body.dark-mode .roaddamage-integration { background: rgba(243, 156, 18, 0.15); border: 1px solid rgba(243, 156, 18, 0.4); }
+body.dark-mode .roaddamage-integration .integration-title { color: #f1c40f; }
+body.dark-mode .lstsurabaya-integration { background: rgba(255, 112, 67, 0.15); border: 1px solid rgba(255, 112, 67, 0.4); }
+body.dark-mode .lstsurabaya-integration .integration-title { color: #ff8a65; }
+body.dark-mode .bioporimap-integration { background: rgba(32, 201, 151, 0.15); border: 1px solid rgba(32, 201, 151, 0.4); }
+body.dark-mode .bioporimap-integration .integration-title { color: #66d9b7; }
+body.dark-mode .losdisplacement-integration { background: rgba(155, 89, 182, 0.15); border: 1px solid rgba(155, 89, 182, 0.4); }
+body.dark-mode .losdisplacement-integration .integration-title { color: #bb86fc; }
+
+/* ===================================================================
+   UTILITIES & RESPONSIVE DESIGN
+=================================================================== */
+.floating-elements { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+.floating-element { position: absolute; border-radius: 50%; animation: floatWavy 12s ease-in-out infinite; }
+.floating-element:nth-child(1){width:120px;height:120px;top:15%;left:8%;animation-delay:0s}
+.floating-element:nth-child(2){width:180px;height:180px;top:55%;right:8%;animation-delay:2s}
+.floating-element:nth-child(3){width:100px;height:100px;bottom:15%;left:15%;animation-delay:4s}
+.floating-element:nth-child(4){width:140px;height:140px;top:30%;right:25%;animation-delay:6s}
+@keyframes floatWavy { 0%,100%{transform:translateY(0) translateX(0) rotate(0deg)} 25%{transform:translateY(-20px) translateX(15px) rotate(5deg)} 50%{transform:translateY(-40px) translateX(0) rotate(-5deg)} 75%{transform:translateY(-20px) translateX(-15px) rotate(0deg)} }
+
+.scroll-indicator, .theme-toggle { position: fixed; cursor: pointer; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+.scroll-indicator { bottom: 30px; right: 30px; width: 60px; height: 60px; font-size: 1.5rem; opacity: 0; transform: translateY(100px); }
+.scroll-indicator.visible { opacity: 1; transform: translateY(0); }
+.theme-toggle { top: 30px; right: 30px; width: 50px; height: 50px; font-size: 1.3rem; z-index: 1000; }
+body.light-mode .theme-toggle { background: #5ba3f5; }
+body.dark-mode .theme-toggle { background: #6c757d; }
+
+@media (max-width: 992px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+}
+@media (max-width: 768px) {
+    .container { padding: 1rem; }
+    .logo { width: 350px; height: 150px; }
+    .logo-text { font-size: 2.2rem; }
+    .stats-grid { grid-template-columns: 1fr; }
+}

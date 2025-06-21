@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: #667eea;
+            animation: rotate 3s ease-in-out infinite;
+        }
+        
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+        
+        .logo h1 {
+            color: #333;
+            font-weight: 700;
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+            margin: 1rem;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Custom Basemap Control */
+        .basemap-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .basemap-btn {
+            display: block;
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .basemap-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .basemap-btn.active {
+            box-shadow: 0 0 0 3px #667eea;
+        }
+        
+        .basemap-btn i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .osm-btn {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+        }
+        
+        .satellite-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+        }
+        
+        .terrain-btn {
+            background: linear-gradient(45deg, #e67e22, #d35400);
+        }
+        
+        .dark-btn {
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+        }
+        
+        /* Map Controls */
+        .leaflet-control-zoom {
+            border: none !important;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .leaflet-control-zoom a {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border: none !important;
+            color: #333 !important;
+            font-weight: bold !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .leaflet-control-zoom a:hover {
+            background: #667eea !important;
+            color: white !important;
+            transform: scale(1.1);
+        }
+        
+        /* Info Panel */
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            max-width: 300px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .info-panel h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .info-panel p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        /* Footer */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            text-align: center;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .footer-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .footer-links a {
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .map-container {
+                margin: 0.5rem;
+                border-radius: 15px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .basemap-control {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .info-panel {
+                bottom: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        </style>
+        <title>Land Displacement Monitoring System</title>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-globe-americas"></i>
+                        <h1>Land Displacement Monitor</h1>
+                    </div>
+                    <nav class="nav-buttons">
+                        <button class="nav-btn" onclick="showAbout()">
+                            <i class="fas fa-info-circle"></i> About
+                        </button>
+                        <button class="nav-btn" onclick="downloadData()">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="nav-btn" onclick="shareMap()">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                    </nav>
+                </div>
+            </header>
+            
+            <!-- Map Container -->
+            <main class="map-container">
+                <div id="map"></div>
+                
+                <!-- Loading Indicator -->
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <div>Loading Map...</div>
+                </div>
+                
+                <!-- Custom Basemap Control -->
+                <div class="basemap-control">
+                    <button class="basemap-btn osm-btn active" onclick="changeBasemap('osm')" title="Street Map">
+                        <i class="fas fa-road"></i>
+                    </button>
+                    <button class="basemap-btn satellite-btn" onclick="changeBasemap('satellite')" title="Satellite Imagery">
+                        <i class="fas fa-satellite-dish"></i>
+                    </button>
+                    <button class="basemap-btn terrain-btn" onclick="changeBasemap('terrain')" title="Topographic">
+                        <i class="fas fa-layer-group"></i>
+                    </button>
+                    <button class="basemap-btn dark-btn" onclick="changeBasemap('dark')" title="Dark Theme">
+                        <i class="fas fa-adjust"></i>
+                    </button>
+                </div>
+                
+                <!-- Info Panel -->
+                <div class="info-panel">
+                    <h3><i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> Displacement Analysis</h3>
+                    <p><strong>Area:</strong> Surabaya Industrial Zone</p>
+                    <p><strong>Coordinates:</strong> 7.21°S, 112.77°E</p>
+                    <p><strong>Max Displacement:</strong> 15.2 cm/year</p>
+                    <p><strong>Risk Level:</strong> <span style="color: #e74c3c; font-weight: bold;">High</span></p>
+                    
+                    <!-- Legend -->
+                    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd;">
+                        <h4 style="font-size: 0.9rem; margin-bottom: 8px;">Displacement Rate (cm/year)</h4>
+                        <div style="display: flex; align-items: center; margin: 3px 0;">
+                            <div style="width: 20px; height: 15px; background: #ffff00; margin-right: 8px; border: 1px solid #ccc;"></div>
+                            <span style="font-size: 0.8rem;">0 - 3 (Low)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin: 3px 0;">
+                            <div style="width: 20px; height: 15px; background: #ff8000; margin-right: 8px; border: 1px solid #ccc;"></div>
+                            <span style="font-size: 0.8rem;">3 - 8 (Medium)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin: 3px 0;">
+                            <div style="width: 20px; height: 15px; background: #ff4000; margin-right: 8px; border: 1px solid #ccc;"></div>
+                            <span style="font-size: 0.8rem;">8 - 15 (High)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin: 3px 0;">
+                            <div style="width: 20px; height: 15px; background: #cc0000; margin-right: 8px; border: 1px solid #ccc;"></div>
+                            <span style="font-size: 0.8rem;">> 15 (Critical)</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <div class="footer-text">
+                        © 2025 Land Displacement Monitor. Geotechnical Analysis & Monitoring System
+                    </div>
+                    <div class="footer-links">
+                        <a href="#"><i class="fab fa-github"></i> GitHub</a>
+                        <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+                        <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js"></script>
+        <script>
+        // Initialize map
+        var map = L.map('map', {
+            zoomControl: false,
+            maxZoom: 28,
+            minZoom: 1,
+            attributionControl: false
+        }).fitBounds([[-7.220575310426219,112.76002765927753],[-7.199089213057822,112.79207389303697]]);
+        
+        // Custom zoom control
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        
+        // Basemap layers
+        var basemaps = {
+            osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                minZoom: 1,
+                maxZoom: 28
+            }),
+            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN, and the GIS User Community',
+                minZoom: 1,
+                maxZoom: 28
+            }),
+            terrain: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenTopoMap contributors',
+                minZoom: 1,
+                maxZoom: 28
+            }),
+            dark: L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+                attribution: '© CartoDB',
+                minZoom: 1,
+                maxZoom: 28
+            })
+        };
+        
+        var currentBasemap = 'osm';
+        basemaps[currentBasemap].addTo(map);
+        
+        // Create a canvas for the displacement visualization
+        function createDisplacementLayer() {
+            var canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 300;
+            var ctx = canvas.getContext('2d');
+            
+            // Create gradient from yellow to red
+            var gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#ffff00');    // Yellow (low displacement)
+            gradient.addColorStop(0.3, '#ffcc00');  
+            gradient.addColorStop(0.5, '#ff8000');  // Orange (medium displacement)
+            gradient.addColorStop(0.7, '#ff4000');  
+            gradient.addColorStop(1, '#cc0000');    // Red (high displacement)
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add some noise/variation to make it look more realistic
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+            
+            for (var i = 0; i < data.length; i += 4) {
+                // Add random variation
+                var variation = (Math.random() - 0.5) * 60;
+                data[i] = Math.max(0, Math.min(255, data[i] + variation));     // Red
+                data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + variation)); // Green
+                data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + variation)); // Blue
+                data[i + 3] = 180; // Alpha (transparency)
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            
+            return canvas.toDataURL();
+        }
+        
+        // Custom displacement data layer
+        var displacementDataUrl = createDisplacementLayer();
+        var customLayer = L.imageOverlay(
+            displacementDataUrl,
+            [[-7.2188370642932345,112.76957796091702],[-7.201426942682628,112.7799216227851]],
+            {opacity: 0.8}
+        ).addTo(map);
+        
+        // Function to change basemap
+        function changeBasemap(type) {
+            // Remove current basemap
+            map.removeLayer(basemaps[currentBasemap]);
+            
+            // Add new basemap
+            currentBasemap = type;
+            basemaps[currentBasemap].addTo(map);
+            
+            // Update button states
+            document.querySelectorAll('.basemap-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.${type}-btn`).classList.add('active');
+        }
+        
+        // Navigation functions
+        function showAbout() {
+            alert('GeoExplorer Pro v2.0\n\nA modern interactive web mapping application for geospatial data visualization and analysis.\n\nFeatures:\n• Multiple basemap options\n• Interactive controls\n• Responsive design\n• Modern UI/UX');
+        }
+        
+        function downloadData() {
+            alert('Download feature coming soon!\n\nThis will allow you to export map data in various formats (GeoJSON, KML, etc.)');
+        }
+        
+        function shareMap() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'GeoExplorer Pro Map',
+                    text: 'Check out this interactive map!',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Map URL copied to clipboard!');
+                });
+            }
+        }
+        
+        // Hide loading indicator once map is loaded
+        map.whenReady(function() {
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 1000);
+        });
+        
+        // Map event listeners
+        map.on('click', function(e) {
+            var lat = e.latlng.lat.toFixed(6);
+            var lng = e.latlng.lng.toFixed(6);
+            
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent(`
+                    <div style="text-align: center; padding: 10px;">
+                        <h4 style="margin: 0 0 10px 0; color: #333;">
+                            <i class="fas fa-map-pin" style="color: #667eea;"></i> Location Details
+                        </h4>
+                        <p style="margin: 5px 0;"><strong>Latitude:</strong> ${lat}</p>
+                        <p style="margin: 5px 0;"><strong>Longitude:</strong> ${lng}</p>
+                        <p style="margin: 5px 0; font-size: 0.9rem; color: #666;">Click anywhere on the map to get coordinates</p>
+                    </div>
+                `)
+                .openOn(map);
+        });
+        
+        // Add scale control
+        L.control.scale({
+            position: 'bottomright',
+            metric: true,
+            imperial: false
+        }).addTo(map);
+        
+        // Custom attribution
+        map.attributionControl.addTo(map);
+        map.attributionControl.setPrefix('<a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+        
+        // Add smooth animations
+        map.on('zoomstart', function() {
+            document.querySelector('.info-panel').style.transform = 'translateY(10px)';
+            document.querySelector('.info-panel').style.opacity = '0.7';
+        });
+        
+        map.on('zoomend', function() {
+            document.querySelector('.info-panel').style.transform = 'translateY(0)';
+            document.querySelector('.info-panel').style.opacity = '1';
+        });
+        </script>
+    </body>
+</html>
